@@ -1,6 +1,7 @@
 import os
 import re
 import shutil
+import random
 
 import PIL.Image
 from PIL import Image
@@ -100,7 +101,32 @@ class Ruiner:
                         angle = int(operation[1:])
                         print("tilt " + str(angle) + "; ", end='')
                         im = im.rotate(angle, expand=True)
+                    elif operation == 'C':
+                        if str(im.getbands()) == "('R', 'G', 'B')":
+                            width, height = im.size
+                            loops = range(int(self._args.confetti))
+            
+                            for x in loops:
+                                #print("pixel iteration: " + str(x))
+                                randx = random.randint(0, width-1)
+                                randy = random.randint(0, height-1)
 
+                                r = 0
+                                g = 0
+                                b = 0 
+
+                                r = random.randint(0,255)
+                                g = random.randint(0,255)
+                                b = random.randint(0,255)
+
+                                rgb = (r, g, b)
+                                
+                                #print("R:" + str(r) + " G:" + str(g) + " B:" + str(b))
+                                #print(" ")
+                                im.putpixel((randx,randy), rgb) 
+                        else:
+                            print("Convert the image to RGB before running --confetti")
+                             
                 self._images.append(im)
                 im.save(outfile, "JPEG")
                 print('')
@@ -122,6 +148,7 @@ def get_args():
     parser.add_argument("--keep-temp", action=argparse.BooleanOptionalAction, default=False, help="Keeps temp files")
     parser.add_argument("-p", "--procedure", type=str, help="Procedure (see readme)")
     parser.add_argument("filename", type=str, help="Input Filename")
+    parser.add_argument("-c", "--confetti", type=int, help="Number of random pixels to add for every loop")
 
     return parser.parse_args()
 
