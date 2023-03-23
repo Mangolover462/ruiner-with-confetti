@@ -83,9 +83,11 @@ class Ruiner:
                     if operation == 'cYCbCr':
                         print("convert to YCbCr; ", end='')
                         im = im.convert("YCbCr")
+                        band = "YCbCr"
                     elif operation == 'cRGB':
                         print("convert to RGB; ", end='')
                         im = im.convert("RGB")
+                        band = "RGB"
                     elif operation.startswith('r'):
                         current_filter = self._filters[operation[1:]]
                         print("shrink " + str(current_filter) + "; ", end='')
@@ -102,7 +104,7 @@ class Ruiner:
                         print("tilt " + str(angle) + "; ", end='')
                         im = im.rotate(angle, expand=True)
                     elif operation == 'C':
-                        if str(im.getbands()) == "('R', 'G', 'B')":
+                        if band == "RGB":
                             width, height = im.size
                             loops = range(int(self._args.confetti))
             
@@ -124,9 +126,11 @@ class Ruiner:
                                 #print("R:" + str(r) + " G:" + str(g) + " B:" + str(b))
                                 #print(" ")
                                 im.putpixel((randx,randy), rgb) 
-                        else:
-                            print("Convert the image to RGB before running --confetti")
-                             
+                        elif band == "YCbCr":
+                            raise argparse.ArgumentTypeError("Convert the image to RGB before running --confetti")
+                           
+                        
+                        
                 self._images.append(im)
                 im.save(outfile, "JPEG")
                 print('')
